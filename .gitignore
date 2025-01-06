@@ -1,3 +1,3 @@
-.__pycache__
+/__pycache__
 myenv/
-secret_api_keys.py
+/secret_api_keys.py
