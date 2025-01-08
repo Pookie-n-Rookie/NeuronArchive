@@ -66,7 +66,7 @@ huggingface_api_key = "your-api-key-here"
 
 5. Start the application:
 ```bash
-streamlit run app.py
+streamlit run rag.py
 ```
 
 ## Usage 💡
