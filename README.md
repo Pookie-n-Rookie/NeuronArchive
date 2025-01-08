@@ -38,8 +38,8 @@ This approach ensures answers are grounded in your documents' actual content, re
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/neuron-archive.git
-cd neuron-archive
+git clone https://github.com/Pookie-n-Rookie/NeuronArchive.git
+cd NeuronArchive
 ```
 
 2. Set up a Python virtual environment:
