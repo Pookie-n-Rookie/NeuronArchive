@@ -1,19 +1,22 @@
 import os
 from langchain.chains import RetrievalQA
-
+from dotenv import load_dotenv
 
 from langchain_huggingface import HuggingFaceEndpoint
 
-from secret_api_keys import huggingface_api_key
-os.environ['HUGGINGFACEHUB_API_TOKEN'] = huggingface_api_key
+
+load_dotenv()
+
+
+huggingface_api_key= os.getenv('HUGGINGFACEHUB_API_TOKEN')
 
 def answer_question(vectorstore, query):
     """Answers a question based on the provided vectorstore."""
     llm = HuggingFaceEndpoint(
-        repo_id='meta-llama/Meta-Llama-3-8B-Instruct',
+        repo_id='mistralai/Mistral-7B-Instruct-v0.2',
         token=huggingface_api_key,
-        temperature=0.6,
-        max_new_tokens=512 
+        temperature=0.5,
+        max_new_tokens=512
     )
     
    
