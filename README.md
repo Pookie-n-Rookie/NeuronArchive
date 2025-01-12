@@ -14,8 +14,8 @@ Neuron Archive uses RAG (Retrieval Augmented Generation) architecture to provide
 2. **Question Answering:**
    - When you ask a question, it's also converted into a vector embedding
    - The system finds the most relevant document chunks using similarity search
-   - These chunks are sent to LLaMA 3 along with your question
-   - LLaMA 3 generates a contextual answer based on the retrieved information
+   - These chunks are sent to Mistral-7B-Instruct along with your question
+   - Mistral-7B-Instruct generates a contextual answer based on the retrieved information
 
 This approach ensures answers are grounded in your documents' actual content, reducing hallucinations and providing accurate responses.
 
@@ -59,9 +59,9 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. Create a `secret_api_keys.py` file with your HuggingFace API key:
-```python
-huggingface_api_key = "your-api-key-here"
+4. Create a `.env` file in the root directory with your HuggingFace API key:
+```
+HUGGING_FACE_API_KEY=your-api-key-here
 ```
 
 5. Start the application:
@@ -77,10 +77,9 @@ streamlit run rag.py
 4. Ask questions about your document in the text input field
 5. View answers and previous Q&A history in the expandable sections
 
-
-
 ## Acknowledgments 🙏
 
 - Built with [Streamlit](https://streamlit.io/)
 - Powered by [LangChain](https://langchain.readthedocs.io/)
 - Uses [HuggingFace](https://huggingface.co/) models and [FAISS](https://github.com/facebookresearch/faiss) for vector search
+- Language model: [Mistral-7B-Instruct-v0.2](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2)
