@@ -76,8 +76,10 @@ streamlit run rag.py
 ![image](https://github.com/user-attachments/assets/f48ae690-13b4-4312-a642-67622e7890bc)
 3.For any link
 (might take a while)
+![image](https://github.com/user-attachments/assets/b24296aa-6377-42ab-b9ea-c52232a47207)
 
 
+We can do the same for txt,text input also.
 
 
 ## Usage 💡
