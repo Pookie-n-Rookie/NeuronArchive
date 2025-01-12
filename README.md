@@ -69,6 +69,16 @@ HUGGING_FACE_API_KEY=your-api-key-here
 streamlit run rag.py
 ```
 
+## Test
+1.For docx file
+![image](https://github.com/user-attachments/assets/afb2d9bd-9213-4a0a-b174-8c3475a83db8)
+2.For pdf file
+3.For any link
+4.For txt file
+5.For test input
+
+
+
 ## Usage 💡
 
 1. Select your input type from the dropdown menu (Text, PDF, DOCX, TXT, or Link)
