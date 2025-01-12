@@ -73,9 +73,10 @@ streamlit run rag.py
 1.For docx file
 ![image](https://github.com/user-attachments/assets/afb2d9bd-9213-4a0a-b174-8c3475a83db8)
 2.For pdf file
+![image](https://github.com/user-attachments/assets/f48ae690-13b4-4312-a642-67622e7890bc)
 3.For any link
-4.For txt file
-5.For test input
+(might take a while)
+
 
 
 
