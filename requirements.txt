@@ -9,5 +9,7 @@ nltk
 sentence-transformers
 langchain-huggingface
 faiss-cpu
+langchain-groq 
+groq
 python-docx
 python-dotenv

@@ -1,17 +1,21 @@
+## rag.py
 import streamlit as st
 from answers import answer_question
 from embed_vec_store import vecstore
+import os
 
-def handle_enter():
-    if "vectorstore" in st.session_state and st.session_state.query:
-        try:
-            answer = answer_question(st.session_state.vectorstore, st.session_state.query)
-            if "answers" not in st.session_state:
-                st.session_state.answers = []
-            st.session_state.answers.insert(0, (st.session_state.query, answer["result"]))
-            st.session_state.query = ""
-        except Exception as e:
-            st.error(f"Error generating answer: {str(e)}")
+# Set USER_AGENT to avoid warnings
+os.environ['USER_AGENT'] = 'Neuron Archive RAG App'
+
+def process_query(query, vectorstore):
+    """Process the user query and return the answer"""
+    try:
+        with st.spinner("🤖 Generating answer..."):
+            answer = answer_question(vectorstore, query)
+            return answer["result"]
+    except Exception as e:
+        st.error(f"Error generating answer: {str(e)}")
+        return None
 
 def main():
     st.set_page_config(
@@ -58,10 +62,11 @@ def main():
         max-width: 80%;
         float: right;
         clear: both;
+        word-wrap: break-word;
     }
     
     .assistant-message {
-        background-color: #FFF00;
+        background-color: #FFFF00;
         color: black;
         padding: 1rem;
         border-radius: 15px 15px 15px 5px;
@@ -69,6 +74,7 @@ def main():
         max-width: 80%;
         float: left;
         clear: both;
+        word-wrap: break-word;
     }
     
     /* Input area container */
@@ -84,7 +90,6 @@ def main():
     .stTextInput>div>div>input {
         background-color: #FFFFFF;
         color: #0000FF;
-        border-radius: 20px;
         padding: 0.75rem 1.5rem;
         font-size: 1rem;
         border: none;
@@ -152,12 +157,30 @@ def main():
         margin: 0 !important;
         padding: 0 !important;
     }
+    
+    /* Clear fix for floating elements */
+    .clearfix::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
     </style>
     """, unsafe_allow_html=True)
+    
+    # Check for Groq API key
+    groq_api_key = os.getenv('GROQ_API_KEY')
+    if not groq_api_key:
+        st.error("⚠️ GROQ_API_KEY not found in environment variables. Please add it to your .env file.")
+        st.stop()
+    
+    # Initialize session state
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
     
     # Sidebar for document upload
     with st.sidebar:
         st.title("📄 Upload your doc here")
+        st.caption("Powered by Groq & llama-3.3-70b-versatile")
         
         input_type = st.selectbox(
             "Document Type",
@@ -179,7 +202,8 @@ def main():
                     key=f"url_{i}",
                     placeholder="https://example.com"
                 )
-                input_data.append(url)
+                if url:  # Only add non-empty URLs
+                    input_data.append(url)
         elif input_type == "Text":
             input_data = st.text_area(
                 "Document Text",
@@ -193,47 +217,82 @@ def main():
             )
         
         if st.button("Process Document", type="primary"):
-            with st.spinner("Processing..."):
-                try:
-                    vectorstore = vecstore(input_type, input_data)
-                    st.session_state.vectorstore = vectorstore
-                    st.success("✅ Document processed!")
-                except Exception as e:
-                    st.error(f"❌ Error: {str(e)}")
+            if input_type == "Link" and not input_data:
+                st.error("❌ Please enter at least one URL")
+            elif input_type == "Text" and not input_data:
+                st.error("❌ Please enter some text")
+            elif input_type in ["PDF", "DOCX", "TXT"] and not input_data:
+                st.error(f"❌ Please upload a {input_type} file")
+            else:
+                with st.spinner("Processing document..."):
+                    try:
+                        vectorstore_result = vecstore(input_type, input_data)
+                        st.session_state.vectorstore = vectorstore_result
+                        st.success("✅ Document processed successfully!")
+                        # Clear previous chat history when new document is processed
+                        st.session_state.chat_history = []
+                    except Exception as e:
+                        st.error(f"❌ Error processing document: {str(e)}")
+        
+        # Show document status
+        if "vectorstore" in st.session_state:
+            st.success("📚 Document ready for Q&A")
+        else:
+            st.info("📝 No document loaded")
     
     # Main chat interface
-    st.title("📚 A Document Q&A Assistant")
+    st.title("📚 Document Q&A Assistant")
+    st.caption("Ask questions about your uploaded documents")
     
     # Display chat history
-    if "answers" in st.session_state and st.session_state.answers:
-        for q, a in reversed(st.session_state.answers):
+    if st.session_state.chat_history:
+        for i, (question, answer) in enumerate(st.session_state.chat_history):
             st.markdown(f"""
-                <div class="user-message">{q}</div>
-                <div class="assistant-message">{a}</div>
+                <div class="clearfix">
+                    <div class="user-message">{question}</div>
+                    <div class="assistant-message">{answer}</div>
+                </div>
             """, unsafe_allow_html=True)
     
-    # Chat input
+    # Chat input using form to avoid session state issues
     if "vectorstore" in st.session_state:
-        if "query" not in st.session_state:
-            st.session_state.query = ""
-        
-        # Fixed container at the bottom
-        with st.container():
-            st.markdown('<div class="input-area">', unsafe_allow_html=True)
-            col1, col2 = st.columns([6, 1])
+        # Use form to handle input properly
+        with st.form(key="chat_form", clear_on_submit=True):
+            col1, col2 = st.columns([5, 1])
+            
             with col1:
-                query = st.text_input(
-                    "",
-                    key="query",
-                    placeholder="Ask a question...",
-                    on_change=handle_enter
+                user_query = st.text_input(
+                    label="Ask a question",
+                    placeholder="Ask a question about your document...",
+                    label_visibility="hidden"
                 )
+            
             with col2:
-                if st.button("Send", type="primary"):
-                    handle_enter()
-            st.markdown('</div>', unsafe_allow_html=True)
+                submitted = st.form_submit_button("Send", type="primary", use_container_width=True)
+            
+            # Process the query when form is submitted
+            if submitted and user_query.strip():
+                # Get answer
+                answer = process_query(user_query.strip(), st.session_state.vectorstore)
+                
+                if answer:
+                    # Add to chat history
+                    st.session_state.chat_history.append((user_query.strip(), answer))
+                    # Rerun to show the new message
+                    st.rerun()
+    
     else:
         st.info("👈 Please upload and process a document to start chatting")
+        
+        # Show example questions
+        st.markdown("### 💡 Example Questions:")
+        st.markdown("""
+        - What is the main topic of this document?
+        - Can you summarize the key points?
+        - What are the important dates mentioned?
+        - Who are the main people discussed?
+        - What conclusions can be drawn?
+        """)
 
 if __name__ == "__main__":
     main()
