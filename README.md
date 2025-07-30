@@ -14,8 +14,8 @@ Neuron Archive uses RAG (Retrieval Augmented Generation) architecture to provide
 2. **Question Answering:**
    - When you ask a question, it's also converted into a vector embedding
    - The system finds the most relevant document chunks using similarity search
-   - These chunks are sent to Mistral-7B-Instruct along with your question
-   - Mistral-7B-Instruct generates a contextual answer based on the retrieved information
+   - These chunks are sent to *llama-3.3-70b-versatile* along with your question
+   - *llama-3.3-70b-versatile* generates a contextual answer based on the retrieved information
 
 This approach ensures answers are grounded in your documents' actual content, reducing hallucinations and providing accurate responses.
 
@@ -61,7 +61,7 @@ pip install -r requirements.txt
 
 4. Create a `.env` file in the root directory with your HuggingFace API key:
 ```
-HUGGING_FACE_API_KEY=your-api-key-here
+GROQ_API_KEY=your-api-key-here
 ```
 
 5. Start the application:
@@ -71,15 +71,23 @@ streamlit run rag.py
 
 ## Test
 1.For docx file
-![image](https://github.com/user-attachments/assets/afb2d9bd-9213-4a0a-b174-8c3475a83db8)
+<img width="1789" height="873" alt="image" src="https://github.com/user-attachments/assets/b2b97e88-4982-485b-84c6-bd900cf92a09" />
+
+
 2.For pdf file
-![image](https://github.com/user-attachments/assets/f48ae690-13b4-4312-a642-67622e7890bc)
+<img width="1874" height="889" alt="image" src="https://github.com/user-attachments/assets/aa4516ef-5631-4ba4-b0cf-f972d278d7a6" />
+
+
 3.For any link
-(might take a while)
-![image](https://github.com/user-attachments/assets/b24296aa-6377-42ab-b9ea-c52232a47207)
+<img width="1914" height="885" alt="image" src="https://github.com/user-attachments/assets/79016d2d-0c83-43e6-b616-9c05cfd42b51" />
 
 
-We can do the same for txt,text input also.
+4.For any txt file
+<img width="1904" height="888" alt="image" src="https://github.com/user-attachments/assets/cd0328f2-fb5b-4031-808d-892f6ca04666" />
+
+
+5.For any random text inserted in the input text box
+<img width="1839" height="802" alt="image" src="https://github.com/user-attachments/assets/c087d076-9215-475e-87d7-5f84ad75a7b2" />
 
 
 ## Usage 💡
@@ -94,5 +102,5 @@ We can do the same for txt,text input also.
 
 - Built with [Streamlit](https://streamlit.io/)
 - Powered by [LangChain](https://langchain.readthedocs.io/)
-- Uses [HuggingFace](https://huggingface.co/) models and [FAISS](https://github.com/facebookresearch/faiss) for vector search
-- Language model: [Mistral-7B-Instruct-v0.2](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2)
+- Uses [GroqCloud]((https://console.groq.com/home)) for model  and [FAISS](https://github.com/facebookresearch/faiss) for vector search
+- Language model: [llama-3.3-70b-versatile]((https://console.groq.com/docs/model/llama-3.3-70b-versatile)) 
